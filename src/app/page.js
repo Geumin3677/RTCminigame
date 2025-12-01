@@ -121,7 +121,7 @@ export default function Home() {
             break;
           case "click":
             if (mySide === "host") {
-              const newScore = Math.max(0, scoreRef.current - 1);
+              const newScore = Math.max(0, scoreRef.current - 5);
               setScore(newScore);
               scoreRef.current = newScore;
               conn.send({ type: "sync", score: newScore });
@@ -168,7 +168,7 @@ export default function Home() {
       if (!conn || winner) return;
 
       if (mySide === "host") {
-        const newScore = Math.min(100, scoreRef.current + 1);
+        const newScore = Math.min(100, scoreRef.current + 5);
         setScore(newScore);
         scoreRef.current = newScore;
         conn.send({ type: "sync", score: newScore });
