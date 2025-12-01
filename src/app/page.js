@@ -65,11 +65,9 @@ export default function Home() {
     const peer = peerRef.current;
     if (!peer) return;
 
-    const shouldJoin = window.confirm(`방 ${roomId}에 참가하시겠어요?`);
+    const shouldJoin = window.confirm(`방 ${id}에 참가하시겠어요?`);
     if (shouldJoin) {
-      const compId = id;
-
-      const connection = await peer.connect(compId, { reliable: true });
+      const connection = await peer.connect(id, { reliable: true });
 
       connection.on("open", () => setInGame(true));
       setConn(connection);
