@@ -5,6 +5,8 @@ import Peer from "peerjs";
 import { QRCodeCanvas } from "qrcode.react";
 import { useState, useEffect, useRef } from "react";
 
+import styles from "./Home.module.css";
+import gameStyles from './TugGame.module.css';
 
 export default function Home() {
   const [ready, setReady] = useState(false);
@@ -26,7 +28,6 @@ export default function Home() {
       setMyId(id);
       setReady(true);
       if (inviteRoom) {
-      console.log("초대 링크로 입장:", inviteRoom);
       autoJoinRoom(inviteRoom);
     }
     });
@@ -93,14 +94,15 @@ export default function Home() {
     }
   }
 
-
+// -----------RoomManagement------------
 
   function TugGame({ conn, mySide }) {
+    const [winner, setWinner] = useState(null);
+    const [animate, setAnimate] = useState(false);
+
     const [score, setScore] = useState(50);
     const scoreRef = useRef(score);
     const [time, setTime] = useState(10);
-    const [winner, setWinner] = useState(null);
-    const [animate, setAnimate] = useState(false);
     const timerRef = useRef(null);
 
     // ref 동기화
@@ -212,8 +214,6 @@ export default function Home() {
     // 승리 텍스트
     // ---------------------------
     const getResultText = () => {
-
-      console.log("winner:", winner, "isHost:", isHost);
       if (!winner) return "";
       if (winner === "host") return isHost ? "승리!" : "패배";
       if (winner === "guest") return isHost ? "패배" : "승리!";
@@ -224,248 +224,92 @@ export default function Home() {
     // UI
     // ---------------------------
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: 40,
-          background: animate
-            ? "linear-gradient(135deg, #a1aad0ff, #867597ff)"
-            : "linear-gradient(135deg, #667eea, #764ba2)",
-          color: "#fff",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          transition: "background 1s ease",
-        }}
-      >
-        <h2 style={{ fontSize: 48, marginBottom: 20 }}>⏱ {time}s</h2>
+    <div
+      className={gameStyles.container}
+      style={{
+        background: animate
+          ? "linear-gradient(135deg, #a1aad0ff, #867597ff)"
+          : "linear-gradient(135deg, #667eea, #764ba2)",
+      }}
+    >
+      <h2 className={gameStyles.timer}>⏱ {time}s</h2>
 
-        {/* 세로 줄 */}
+      <div className={gameStyles.verticalLine}>
+        <div className={gameStyles.lineMarker} style={{ top: "40%" }} />
+        <div className={gameStyles.lineMarker} style={{ top: "60%" }} />
+
         <div
+          className={gameStyles.circle}
           style={{
-            position: "relative",
-            width: 30,
-            height: 300,
-            background: "rgba(255,255,255,0.2)",
-            borderRadius: 15,
-            marginBottom: 40,
+            top: mySide === "host" ? `calc(${score}% - 15px)` : `calc(${100 - score}% - 15px)`,
           }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "40%",
-              left: -15,
-              width: 60,
-              height: 2,
-              background: "#ffffff74",
-              borderRadius: 2,
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              top: "60%",
-              left: -15,
-              width: 60,
-              height: 2,
-              background: "#ffffff74",
-              borderRadius: 2,
-            }}
-          />
-          {/* 점수 동그라미 */}
-          <div
-            style={{
-              position: "absolute",
-              top: mySide === "host" ? `calc(${score}% - 15px)` : `calc(${100 - score}% - 15px)`,
-              width: 30,
-              height: 30,
-              borderRadius: "50%",
-              background: "orange",
-              transition: "top 0.1s linear",
-            }}
-          />
-        </div>
-
-        {!winner && (
-          <button
-            onClick={handleClick}
-            style={{
-              padding: "15px 30px",
-              fontSize: 22,
-              borderRadius: 12,
-              border: "none",
-              background: "#ff7e5f",
-              color: "#fff",
-              cursor: "pointer",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.4)",
-            }}
-          >
-            당기기!
-          </button>
-        )}
-
-        {winner && (
-          <>
-            <h1 style={{ marginTop: 30, fontSize: 36 }}>{getResultText()}</h1>
-            <button
-              onClick={sendReset}
-              style={{
-                marginTop: 20,
-                padding: "10px 20px",
-                fontSize: 20,
-                borderRadius: 10,
-                border: "none",
-                background: "#4ade80",
-                color: "#fff",
-                cursor: "pointer",
-              }}
-            >
-              🔄 재경기
-            </button>
-          </>
-        )}
+        />
       </div>
-    );
+
+      {!winner && <button className={gameStyles.pullButton} onClick={handleClick}>당기기!</button>}
+
+      {winner && (
+        <>
+          <h1 className={gameStyles.resultText}>{getResultText()}</h1>
+          <button className={gameStyles.resetButton} onClick={sendReset}>🔄 재경기</button>
+        </>
+      )}
+    </div>
+  );
   }
 
   if (!ready) return null;
 
-   if (!inGame)
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "linear-gradient(135deg, #667eea, #764ba2)",
-          color: "#fff",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          textAlign: "center",
-          padding: "20px",
-        }}
-      >
-        <h1 style={{ fontSize: "48px", marginBottom: "20px", textShadow: "2px 2px 8px rgba(0,0,0,0.3)" }}>
-          🎮 1:1 Mini Game
-        </h1>
+  if (!inGame)
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>🎮 1:1 Mini Game</h1>
 
-        {isHost ? (
-          <>
-            <div
-              style={{
-                fontSize: "24px",
-                padding: "20px",
-                borderRadius: "12px",
-                background: "rgba(255,255,255,0.1)",
-                boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
-              }}
-            >
-              방 ID: <span style={{ fontWeight: "bold", fontSize: "28px" }}>{myId}</span>
-            </div>
-            <button
-              onClick={shareRoom}
-              style={{
-                padding: "10px 16px",
-                margin : 20,
-                fontSize: 16,
-                background: "#2f80ed",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-                marginTop: 10,
-              }}
-            >
-      초대 링크 공유하기
-    </button>
-     <div
-          style={{
-            background: "#fff",
-            padding: 10,
-            borderRadius: 16,
-            display: "flex",
-            justifyContent: "center",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-            marginBottom: 20,
-          }}
-        >
-          <QRCodeCanvas value={`${window.location.origin}?room=${myId}`} size={200} />
-        </div>
-
-    <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>
-      QR 코드를 스캔하면 자동으로 참가됩니다!
-    </p>
-    </>
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-              marginTop: "20px",
-              width: "300px",
-            }}
-          >
-            <button
-              onClick={createRoom}
-              style={{
-                padding: "15px",
-                fontSize: "18px",
-                borderRadius: "10px",
-                border: "none",
-                background: "#ff7e5f",
-                color: "#fff",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                transition: "0.2s",
-              }}
-              onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
-              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-            >
-              방 생성
-            </button>
-
-            <input
-              className="compId"
-              placeholder="방 번호 입력"
-              style={{
-                padding: "12px",
-                fontSize: "16px",
-                borderRadius: "8px",
-                border: "none",
-                outline: "none",
-                textAlign: "center",
-              }}
-            />
-
-            <button
-              onClick={joinRoom}
-              style={{
-                padding: "15px",
-                fontSize: "18px",
-                borderRadius: "10px",
-                border: "none",
-                background: "#4ade80",
-                color: "#fff",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                transition: "0.2s",
-              }}
-              onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
-              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-            >
-              방 참가
-            </button>
+      {isHost ? (
+        <>
+          <div className={styles.hostCard}>
+            방 ID: <span className={styles.hostId}>{myId}</span>
           </div>
-        )}
 
-        <p style={{ marginTop: "40px", fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>
-          친구와 함께 즐겨보세요! 🕹️
-        </p>
-      </div>
-    );
+          <button className={styles.shareButton} onClick={shareRoom}>
+            초대 링크 공유하기
+          </button>
+
+          <div className={styles.qrWrapper}>
+            <QRCodeCanvas value={`${window.location.origin}?room=${myId}`} size={200} />
+          </div>
+
+          <p className={styles.infoText}>
+            QR 코드를 스캔하면 자동으로 참가됩니다!
+          </p>
+        </>
+      ) : (
+        <div className={styles.guestWrapper}>
+          <button className={`${styles.guestButton} ${styles.create}`} onClick={createRoom}>
+            방 생성
+          </button>
+
+          <input
+            className="compId"
+            placeholder="방 번호 입력"
+            style={{
+              padding: "12px",
+              fontSize: "16px",
+              borderRadius: "8px",
+              border: "none",
+              outline: "none",
+              textAlign: "center",
+            }}
+          />
+
+          <button className={`${styles.guestButton} ${styles.join}`} onClick={joinRoom}>
+            방 참가
+          </button>
+        </div>
+      )}
+
+      <p className={styles.infoText}>친구와 함께 즐겨보세요! 🕹️</p>
+    </div>
+  );
   return <TugGame conn={conn} mySide={(isHost) ? ("host"):("guest")} />;
 }

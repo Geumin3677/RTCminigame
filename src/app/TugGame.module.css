@@ -1,0 +1,70 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background 1s ease;
+}
+
+.timer {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.verticalLine {
+  position: relative;
+  width: 30px;
+  height: 300px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 15px;
+  margin-bottom: 40px;
+}
+
+.lineMarker {
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 2px;
+  left: -15px;
+}
+
+.circle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: orange;
+  transition: top 0.1s linear;
+}
+
+.pullButton {
+  padding: 15px 30px;
+  font-size: 22px;
+  border-radius: 12px;
+  border: none;
+  background: #ff7e5f;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.resultText {
+  margin-top: 30px;
+  font-size: 36px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+}
+
+.resetButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+  background: #4ade80;
+  color: #fff;
+  cursor: pointer;
+}
